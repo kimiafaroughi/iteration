@@ -103,6 +103,16 @@ mean_and_sd = function(x) {
 mean_and_sd(x = x_vec)
 ```
 
+This will import the function for use here.
+
+```{r}
+source("source/mean_and_sd.R")
+```
+
+```{r}
+mean_and_sd(x_vec)
+```
+
 ## Make up data...
 
 Let's *simulate* some data
@@ -147,7 +157,7 @@ sim_mean_sd = function(n_subj, mu = 3, sigma = 2) {
 }
 ```
 
-Let's run this fucntion.
+Let's run this function.
 
 ```{r}
 sim_mean_sd(n_subj = 50)
