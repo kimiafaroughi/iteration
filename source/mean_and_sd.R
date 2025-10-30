@@ -25,5 +25,3 @@ mean_and_sd = function(x) {
   )
   
 }
-
-mean_and_sd(x = x_vec)
