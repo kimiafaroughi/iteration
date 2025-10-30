@@ -1,15 +1,26 @@
----
-title: "simulation"
-author: "Kimia Faroughi"
-date: "2025-10-30"
-output: github_document
----
+simulation
+================
+Kimia Faroughi
+2025-10-30
 
 Load key packages and source necessary files.
 
-```{r}
+``` r
 library(tidyverse)
+```
 
+    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+    ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+    ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+    ## ✔ ggplot2   3.5.2     ✔ tibble    3.3.0
+    ## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+    ## ✔ purrr     1.1.0     
+    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
+    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+
+``` r
 source("source/sim_mean_sd.R")
 
 #global ggplot settings
@@ -30,11 +41,11 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
-Can I "verify" the central limit theorem?
+Can I “verify” the central limit theorem?
 
 First with a `for` loop
 
-```{r}
+``` r
 output = vector("list", length = 100)
 
 for (i in 1:100) {
@@ -49,9 +60,11 @@ output |>
   geom_density()
 ```
 
+<img src="simulation_files/figure-gfm/unnamed-chunk-2-1.png" width="90%" />
+
 Try to repeat with a map statement.
 
-```{r}
+``` r
 sim_results_df =
   expand_grid(
     sample_size = c(30, 60, 90, 120),
@@ -63,9 +76,9 @@ sim_results_df =
   unnest(results)
 ```
 
-Let's look at this:
+Let’s look at this:
 
-```{r}
+``` r
 sim_results_df |> 
   mutate(
     sample_size = str_c("n = ", sample_size),
@@ -75,9 +88,11 @@ sim_results_df |>
   geom_violin()
 ```
 
-Let's try to summarize...
+<img src="simulation_files/figure-gfm/unnamed-chunk-4-1.png" width="90%" />
 
-```{r}
+Let’s try to summarize…
+
+``` r
 sim_results_df |> 
   group_by(sample_size) |> 
   summarize(
@@ -86,9 +101,17 @@ sim_results_df |>
   )
 ```
 
+    ## # A tibble: 4 × 3
+    ##   sample_size emp_mean emp_se
+    ##         <dbl>    <dbl>  <dbl>
+    ## 1          30     3.02  0.361
+    ## 2          60     2.99  0.251
+    ## 3          90     3.01  0.214
+    ## 4         120     3.00  0.181
+
 ## Simple linear regression
 
-```{r}
+``` r
 sim_df =
   tibble(
     x = rnorm(30, mean = 1, sd = 1),
@@ -98,15 +121,22 @@ sim_df =
 sim_df |> 
   ggplot(aes(x = x, y = y)) +
   geom_point()
+```
 
+<img src="simulation_files/figure-gfm/unnamed-chunk-6-1.png" width="90%" />
+
+``` r
 slr_fit = lm(y ~ x, data = sim_df)
 
 coef(slr_fit)
 ```
 
-Turn this into a function 
+    ## (Intercept)           x 
+    ##    2.082352    3.060486
 
-```{r}
+Turn this into a function
+
+``` r
 sim_regression = function(n_subj, beta_0 = 2, beta_1 = 3) {
   
   sim_df =
@@ -129,11 +159,16 @@ sim_regression = function(n_subj, beta_0 = 2, beta_1 = 3) {
 }
 ```
 
-```{r}
+``` r
 sim_regression(n_subj = 30)
 ```
 
-```{r}
+    ## # A tibble: 1 × 2
+    ##   beta0_hat beta1_hat
+    ##       <dbl>     <dbl>
+    ## 1      2.14      2.73
+
+``` r
 output = vector("list", length = 500)
 
 for(i in 1:500) {
@@ -146,7 +181,22 @@ output |>
   bind_rows()
 ```
 
-```{r}
+    ## # A tibble: 500 × 2
+    ##    beta0_hat beta1_hat
+    ##        <dbl>     <dbl>
+    ##  1      1.82      3.29
+    ##  2      1.84      2.92
+    ##  3      2.02      3.05
+    ##  4      2.08      3.02
+    ##  5      2.02      2.91
+    ##  6      2.23      2.97
+    ##  7      1.84      3.38
+    ##  8      1.62      3.27
+    ##  9      1.96      3.03
+    ## 10      2.35      2.89
+    ## # ℹ 490 more rows
+
+``` r
 slr_sim_results_df =
   expand_grid(
     sample_size = 30,
@@ -162,9 +212,11 @@ slr_sim_results_df |>
   geom_point()
 ```
 
+<img src="simulation_files/figure-gfm/unnamed-chunk-10-1.png" width="90%" />
+
 ## One more example!
 
-```{r}
+``` r
 birthdays = sample(1:365, 5, replace = TRUE)
 
 #if number of unique birthdays is < 5 (there is a repeated bday) this will return as true
@@ -173,9 +225,11 @@ repeated_bday = length(unique(birthdays)) < 5
 repeated_bday
 ```
 
+    ## [1] FALSE
+
 Put this in a function
 
-```{r}
+``` r
 bday_sim = function (n_room) {
   
   birthdays = sample(1:365, n_room, replace = TRUE)
@@ -190,7 +244,9 @@ bday_sim = function (n_room) {
 bday_sim(20)
 ```
 
-```{r}
+    ## [1] TRUE
+
+``` r
 bday_sim_results =
   expand_grid(
     bdays = 5:50, #number of people in the room
@@ -207,12 +263,13 @@ bday_sim_results =
   )
 ```
 
-Plot this 
+Plot this
 
-```{r}
+``` r
 bday_sim_results |> 
   ggplot(aes(x = bdays, y = prob_repeat)) +
   geom_point() +
   geom_line()
 ```
 
+<img src="simulation_files/figure-gfm/unnamed-chunk-14-1.png" width="90%" />

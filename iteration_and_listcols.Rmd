@@ -2,7 +2,7 @@
 title: "iteration_and_listcols"
 author: "Kimia Faroughi"
 date: "2025-10-30"
-output: html_document
+output: github_document
 ---
 
 ```{r}
